@@ -57,10 +57,10 @@
                     <button class="btn btn-outline-success" type="submit">Search</button>
                 </form>
                 <span style="color: lightskyblue;">_</span>
-                <form class="d-flex text-center">
+                <div class="d-flex text-center">
                     <button v-if="tombolLogin" @click="mTombolLogin" class="btn btn-outline-primary ml-3" >LOGIN</button>
                     <button v-if="!tombolLogin" @click="logout1" class="btn btn-outline-danger ml-3" >LOGOUT</button>
-                </form>
+                </div>
                 </div>
             </div>
         </nav>
@@ -104,10 +104,19 @@
                 </thead>
                 <tbody>
                 <tr  v-for="dat,index in data">
-                    <th scope="row">{{index+1}}</th>
-                    <td>{{dat.judul}}</td>
+                    <!-- <div type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop1"> -->
+                    <td scope="row">{{index+1}}</td>
+                    <td @click="klikDetail(dat)" data-bs-toggle="modal" data-bs-target="#staticBackdrop1" style="color: blue;"> {{dat.judul}}</td>
                     <td>{{dat.kategori}}</td>
-                    <a   target="_blank"><td  class="d-grid gap-2 col-12 mx-auto"><button type="button" class="btn btn-info btn-sm">{{dat.link_url}}</button></td></a>
+                    
+                    <td  class="d-grid gap-2 col-12 mx-auto">
+                        <a :href="dat.url" target="_blank">
+                            <button type="button" class="btn btn-info btn-sm">link</button>
+                        </a>
+                    </td>
+                        
+                    <!-- </div> -->
+                    
                 </tr>
                 <!-- <tr>
                     <th scope="row">2</th>
@@ -123,7 +132,7 @@
                 </tr> -->
                 </tbody>
             </table>
-
+{{detail}}
             <div v-if="hasilLogin.length >0">
                 <!-- {{hasilLogin}}
 
@@ -132,24 +141,7 @@
         </div>
         <!-- Home Login -->
 
-        <!-- detail link -->
-            <div v-if="detailLink" class="card text-center">
-                <div class="card-header" style="background-color: lightskyblue ;">
-                <b>DETAIL LINK</b> 
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title">Judul Link</h5>
-                    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                    <a href="#" class="btn btn-info">Go to Link</a>
-                </div>
-                <div class="card-footer text-muted">
-                        <a href=""><li class="mt-2">link Lorem ipsum, dolor sit amet </li></a>
-                        <a href=""><li class="mt-2">link Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nostrum, placeat?</li></a>
-                        <a href=""><li class="mt-2">link Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nostrum, placeat?</li></a>
-                        
-                </div>
-            </div>
-        <!-- detail link -->
+
 
         <!-- register-form -->
         <div v-if="formRegister" class="container row  mx-auto mt-5">
@@ -193,7 +185,7 @@
                     <input v-model="passw" type="password" class="form-control"  placeholder="password">
                     </div>
                     
-                    <button @click="cekLogin"  class="btn btn-primary">Login</button>
+                    <button v-if="tombolLogin1" @click="cekLogin"  class="btn btn-primary">Login</button>
                 </form>
             </div>
         </div>
@@ -254,6 +246,47 @@
             </div>
         </div>
 
+                <!-- Modal detail -->
+                <div class="modal fade" id="staticBackdrop1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="false">
+                    <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Detail</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                        <!-- detail link -->
+                            <div  class="card text-center">
+                                <div class="card-header" style="background-color: lightskyblue ;">
+                                <b>DETAIL LINK</b> 
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">{{detail.judul}}</h5>
+                                    <p class="card-text">{{detail.deskripsi}}</p>
+                                    <a :href="detail.url" target="_blank" class="btn btn-info">Go to Link</a>
+                                    {{detail.linkTambahan}} <br>
+                                    
+                                </div>
+                                <div class="card-footer text-muted" >
+                                    tes v for
+                                        <p class="mt-2" v-for="fruit in detail.linkTambahan" :key="fruit" >{{fruit}}</p>
+                                    
+                                        <!-- <a href=""><li class="mt-2">link Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nostrum, placeat?</li></a>
+                                        <a href=""><li class="mt-2">link Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nostrum, placeat?</li></a> -->
+                                        
+                                </div>
+                            </div>
+                        <!-- detail link -->
+                        
+                        </div>
+                        <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Simpan</button>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
 
 
 
@@ -281,6 +314,7 @@
             formLogin:false,
             tombolRekam:false,
             tombolLogin:true,
+            tombolLogin1:true,
             status:'public',
             nama:"",
             email:"",
@@ -289,6 +323,7 @@
             hasilQuery:[],
             hasilLogin:[],
             data:[],
+            detail:[],
             cek:true,
 
 
@@ -339,6 +374,14 @@
                 this.home2 = false
                 this.tombolRekam = false
                 this.tombolLogin = true
+                this.tombolLogin1 = true
+                this.nama = ""
+                this.email = ""
+                this.passw = ""
+            },
+            klikDetail(x){
+                this.detail=x
+                this.detail.linkTambahan = [x.linkTambahan]
             },
             queryData(){
                 // alert("Ambil Data")
@@ -382,7 +425,10 @@
             
             },
             cekLogin(){
+
                 if(this.email && this.passw){
+                    app.tombolLogin1 = false
+                    
                 // alert("cek login")
                 var ikegiatan = this.email.toString();
                 var ikegiatan1 = this.passw.toString();
@@ -400,10 +446,8 @@
                     // alert('Email telah ada yang menggunakan')
                     
                     app.mAmbilHasilLogin()
-                    app.formLogin = false
-                    app.home2 = true
-                    app.tombolRekam = true
-                    app.tombolLogin = false
+                    
+
                     
 
                 },
@@ -425,8 +469,18 @@
 
                 $.getJSON(url, function (json) {
                 // console.log(json.data);
-                app.hasilLogin = json.data;
-                app.queryData()
+                if(json.data.length > 0){
+                    app.formLogin = false
+                    app.hasilLogin = json.data;
+                    app.home2 = true
+                    app.tombolRekam = true
+                    app.tombolLogin = false
+                    app.queryData()
+                }else{
+                    alert("user / password salah")
+                    app.tombolLogin1 = true
+
+                }
                 });
 
             
